@@ -8,11 +8,14 @@ public class Coginator : CogsAgent
 {
     // ------------------BASIC MONOBEHAVIOR FUNCTIONS-------------------
     
+    Animator animator;
+
     // Initialize values
     protected override void Start()
     {
         base.Start();
         AssignBasicRewards();
+        animator = GetComponentInChildren<Animator>();
     }
 
     // For actual actions in the environment (e.g. movement, shoot laser)
@@ -21,6 +24,20 @@ public class Coginator : CogsAgent
         base.FixedUpdate();
         
         LaserControl();
+        if (rBody.velocity != Vector3.zero) {
+            animator.SetBool("Moving", true);
+        }else {
+            animator.SetBool("Moving", false);
+        }
+
+        if (IsFrozen()) {
+            if (!animator.GetBool("Frozen")) {
+                animator.SetTrigger("hit");
+            }
+            animator.SetBool("Frozen", true);
+        }else {
+            animator.SetBool("Frozen", false);
+        }
         // Movement based on DirToGo and RotateDir
         moveAgent(dirToGo, rotateDir);
     }
@@ -149,6 +166,10 @@ public class Coginator : CogsAgent
         if (collision.gameObject.CompareTag("HomeBase") && collision.gameObject.GetComponent<HomeBase>().team == GetTeam())
         {
             AddReward(rewardDict["one-ball-in-base"] * carriedTargets.Count);
+            if (carriedTargets.Count > 0) { 
+                Debug.Log(carriedTargets.Count);
+                animator.SetTrigger("pickUp");
+            }
         }
         base.OnTriggerEnter(collision);
     }
@@ -161,6 +182,7 @@ public class Coginator : CogsAgent
         if (collision.gameObject.CompareTag("Target") && collision.gameObject.GetComponent<Target>().GetInBase() != GetTeam() && collision.gameObject.GetComponent<Target>().GetCarried() == 0 && !IsFrozen())
         {
             AddReward(rewardDict["pick-up-one-ball"]);
+            animator.SetTrigger("pickUp");
         }
 
         if (collision.gameObject.CompareTag("Wall"))
@@ -226,8 +248,14 @@ public class Coginator : CogsAgent
         //shoot
         if (shootAxis == 1){
             SetLaser(true);
+            if (IsLaserOn() && !IsFrozen()) {
+                animator.SetBool("Attacking", true);
+            }else {
+                animator.SetBool("Attacking", false);
+            }
         }
         else {
+            animator.SetBool("Attacking", false);
             SetLaser(false);
         }
 
