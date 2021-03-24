@@ -24,11 +24,6 @@ public class Coginator : CogsAgent
         base.FixedUpdate();
         
         LaserControl();
-        if (rBody.velocity != Vector3.zero) {
-            animator.SetBool("Moving", true);
-        }else {
-            animator.SetBool("Moving", false);
-        }
 
         if (IsFrozen()) {
             if (!animator.GetBool("Frozen")) {
@@ -209,6 +204,7 @@ public class Coginator : CogsAgent
     
     private void MovePlayer(int forwardAxis, int rotateAxis, int shootAxis, int goToTargetAxis, int goToBase)
     {
+        bool running = false;
         dirToGo = Vector3.zero;
         rotateDir = Vector3.zero;
 
@@ -226,10 +222,11 @@ public class Coginator : CogsAgent
         }
         else if (forwardAxis == 1){
             dirToGo = forward;
+            running = true;
         }
         else if (forwardAxis == 2){
             dirToGo = backward;
-            
+            running = true;
         }
 
         //rotateAxis: 
@@ -262,12 +259,30 @@ public class Coginator : CogsAgent
         //go to the nearest target
         if (goToTargetAxis == 1){
             GoToNearestTarget();
+            running = true;
+            
         }
         if (goToBase == 1){
             GoToBase();
+            running = true;
         }
         
-        
+        runAnimation(running);
+    }
+
+    private void runAnimation(bool running) {
+        if (running) {
+            if (carriedTargets.Count > 3) {
+                animator.SetBool("Moving", false);
+                animator.SetBool("Walking", true);
+            }else {
+                animator.SetBool("Moving", true);
+                animator.SetBool("Walking", false);
+            }
+        }else {
+            animator.SetBool("Moving", false);
+            animator.SetBool("Walking", false);
+        }
     }
 
     // Go to home base

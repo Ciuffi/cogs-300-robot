@@ -1,20 +1,4 @@
 {
-    "Agent": {
-        "checkpoints": [
-            {
-                "steps": 92478,
-                "file_path": "results\\coginator_initial\\Agent\\Agent-92478.onnx",
-                "reward": null,
-                "creation_time": 1616542780.6996207
-            }
-        ],
-        "final_checkpoint": {
-            "steps": 92478,
-            "file_path": "results\\coginator_initial\\Agent.onnx",
-            "reward": null,
-            "creation_time": 1616542780.6996207
-        }
-    },
     "metadata": {
         "stats_format_version": "0.1.0",
         "mlagents_version": "0.17.0",
